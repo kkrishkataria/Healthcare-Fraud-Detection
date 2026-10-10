@@ -1,0 +1,46 @@
+{
+    "threshold": 0.22796696424484253,
+    "features": [
+        "InpatientClaims",
+        "OutpatientClaims",
+        "TotalClaims",
+        "InpatientReimbursement",
+        "OutpatientReimbursement",
+        "TotalReimbursement",
+        "AvgReimbursementPerClaim",
+        "UniquePatients",
+        "ClaimsPerPatient",
+        "ReimbursementPerPatient",
+        "InpatientRatio",
+        "AvgLengthOfStay",
+        "MedianLengthOfStay",
+        "UniqueDiagnosisCount",
+        "UniqueProcedureCount",
+        "UniquePhysicianCount",
+        "PhysicianConcentration",
+        "AvgPatientAge",
+        "MedianPatientAge",
+        "FemalePatientRatio",
+        "AvgChronicConditions",
+        "TotalDiagnosisEntries",
+        "DiagnosisIntensity",
+        "TotalProcedureEntries",
+        "ProcedureIntensity",
+        "ClaimsPerPhysician",
+        "LogTotalDiagnosisEntries",
+        "LogClaimsPerPhysician",
+        "LogTotalProcedureEntries",
+        "AvgLengthOfStay_Missing",
+        "MedianLengthOfStay_Missing",
+        "UniqueProcedureCount_Missing"
+    ],
+    "missing_features": [
+        "AvgLengthOfStay",
+        "MedianLengthOfStay",
+        "UniqueProcedureCount"
+    ],
+    "risk_bands": {
+        "low_max": 0.22796696424484253,
+        "medium_max": 0.6
+    }
+}
