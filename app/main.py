@@ -13,7 +13,7 @@ from xgboost import XGBClassifier
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 MODEL_DIR = BASE_DIR / "models"
-DATA_PATH = BASE_DIR / "data"/ "processed" / "provider_features.csv"
+DATA_PATH = BASE_DIR / "data" / "provider_features.csv"
 
 providers_df = pd.read_csv(DATA_PATH)
 
