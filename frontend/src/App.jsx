@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Activity, ArrowRight, Building2, CheckCircle2, RefreshCw, Search, ShieldCheck } from "lucide-react";
 
-const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const API = "https://healthcare-fraud-detection-hbpk.onrender.com";
 
 const groups = [
   { title: "Claims & reimbursement", fields: ["InpatientClaims", "OutpatientClaims", "InpatientReimbursement", "OutpatientReimbursement"] },
