@@ -43,3 +43,4 @@ htmlcov/
 *.temp
 
 frontend/node_modules/
+models/xgb_tuned.json
