@@ -21,8 +21,19 @@ button:focus-visible, .clear:focus-visible, .provider-buttons button:focus-visib
 .metric strong.medium { color: #a56d17; }.metric strong.low { color: #17744d; }
 .provider-results { min-height: 42px; margin-top: 15px; color: #718096; font-size: 12px; }.result-label { display: block; margin-bottom: 8px; color: #65758b; font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; }.provider-results .provider-buttons { margin-top: 0; }.empty-results { display: flex; align-items: center; gap: 7px; color: #9a4a42; }
 .inputs label.invalid input { border-color: #c6534c; }.field-error { color: #ae3d38; font-size: 11px; }.error { display: flex; align-items: center; gap: 7px; }
-.result-values { display: grid; gap: 10px; padding: 22px 0 18px; }.result-values div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }.result-values span { color: #748198; font-size: 12px; }.result-values strong { color: #244a7d; font-size: 18px; }
+.result-values { display: grid; gap: 10px; padding: 22px 0 18px; }.result-values > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }.result-values > div > span { color: #748198; font-size: 12px; }.result-values > div > strong { color: #244a7d; font-size: 18px; }
 .meter { position: relative; }.threshold-marker { position: absolute; top: -4px; width: 2px; height: 16px; transform: translateX(-1px); background: #243d63; border-radius: 2px; box-shadow: 0 0 0 1px #fff; }
+.probability-summary { display: grid; justify-items: center; gap: 9px; width: 100%; padding: 4px 0 8px; }
+.probability-ring { --ring-color: #2c9a65; display: grid; place-items: center; width: 142px; aspect-ratio: 1; padding: 10px; border-radius: 50%; background: conic-gradient(var(--ring-color) calc(var(--probability) * 1%), #e8eef5 0); box-shadow: 0 10px 22px rgba(42, 72, 112, .12); transition: background .35s ease, transform .2s ease; }
+.probability-ring:hover { transform: scale(1.03); }
+.probability-ring.medium { --ring-color: #d99227; }
+.probability-ring.high { --ring-color: #c55650; }
+.probability-ring__inner { display: grid; place-content: center; width: 100%; height: 100%; text-align: center; background: #fff; border-radius: 50%; box-shadow: inset 0 0 0 1px #edf1f6; }
+.probability-ring__inner strong { color: #244a7d; font-family: "Newsreader", Georgia, serif; font-size: 35px; line-height: 1; letter-spacing: -.7px; font-variant-numeric: tabular-nums; }
+.probability-ring__inner span, .probability-caption { color: #748198; font-size: 11px; font-weight: 600; }
+.probability-ring__inner span { margin-top: 5px; text-transform: uppercase; font-size: 9px; letter-spacing: .7px; }
+.probability-caption { text-align: center; }
+@media (max-width: 720px) { .probability-ring { width: 126px; } .probability-ring__inner strong { font-size: 31px; } }
 .explanations { display: flex; gap: 9px; margin-top: 18px; padding: 13px; color: #3971ad; background: #f4f8fd; border: 1px dashed #bdd2eb; border-radius: 8px; }.explanations svg { flex: 0 0 auto; }.explanations strong { color: #3a4b64; font-size: 13px; }.explanations p { margin: 3px 0 0; color: #758299; font-size: 11px; line-height: 1.45; }
 @media (max-width: 1100px) { .portfolio { grid-template-columns: repeat(3, 1fr); }.portfolio-head { grid-column: span 3; } }
 @media (max-width: 720px) { .portfolio { grid-template-columns: 1fr 1fr; }.portfolio-head { grid-column: span 2; } }

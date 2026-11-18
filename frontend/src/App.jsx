@@ -980,9 +980,22 @@ export default function App() {
               <>
                 <span className={`risk ${risk}`}>{result.risk_level} risk</span>
                 <div className="result-values">
-                  <div>
-                    <span>Predicted probability</span>
-                    <strong>{probability}%</strong>
+                  <div className="probability-summary">
+                    <div
+                      className={`probability-ring ${risk}`}
+                      style={{ "--probability": probability }}
+                      role="progressbar"
+                      aria-label="Potential fraud probability"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      aria-valuenow={probability}
+                    >
+                      <div className="probability-ring__inner">
+                        <strong>{probability}%</strong>
+                        <span>risk score</span>
+                      </div>
+                    </div>
+                    <span className="probability-caption">Predicted probability</span>
                   </div>
                   <div>
                     <span>Risk level</span>
@@ -996,11 +1009,7 @@ export default function App() {
 
                 <div
                   className="meter"
-                  role="progressbar"
-                  aria-label="Potential fraud probability"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                  aria-valuenow={probability}
+                  aria-label="Probability compared with review threshold"
                 >
                   <i style={{ width: `${probability}%` }} />
                   <div
