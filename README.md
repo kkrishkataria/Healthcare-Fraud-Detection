@@ -1,83 +1,90 @@
-# Verity Health · Healthcare Provider Fraud Risk Detection & Explainable AI (XAI)
+# Verity Health — Healthcare Fraud Risk Detection
 
-An end-to-end machine learning system and interactive surveillance dashboard designed to detect potential healthcare provider fraud across Medicare and Medicaid billing records. Powered by an optimized **XGBoost Classifier** with **TreeSHAP local feature attribution**, served via **FastAPI**, and visualized through an enterprise **React single-page dashboard redesigned by Antigravity**.
+[![Live dashboard](https://img.shields.io/badge/live%20dashboard-Vercel-000000?logo=vercel)](https://healthcare-fraud-detection-beryl.vercel.app/)
 
-> **Note:** A model prediction is a prioritization signal to guide clinical audits and human investigator follow-up; it does not constitute legal or clinical confirmation of fraud.
+An end-to-end machine-learning application for prioritizing potential healthcare-provider fraud risk. It combines an XGBoost classifier, a FastAPI inference API, and a React dashboard to help audit teams explore provider data, score custom scenarios, and focus review effort on unusual billing and utilization patterns.
 
----
+**Live app:** [healthcare-fraud-detection-beryl.vercel.app](https://healthcare-fraud-detection-beryl.vercel.app/)
 
-## Key Highlights
+> Predictions are decision-support signals, not proof of fraud. Every flagged provider requires human investigation, relevant clinical context, and due process before an audit or enforcement decision.
 
-- **Explainable AI (TreeSHAP)**: Every prediction is broken down into exact mathematical contributions—identifying which specific billing anomalies pushed the risk score up and which baseline clinical measures mitigated risk.
-- **Frontend Redesigned by Antigravity**: A modern single-page React interface in `frontend/src/App.jsx` featuring calibrated risk meters, dynamic financial calculations, quick benchmark test cases, and interactive diverging SHAP waterfall charts.
-- **Optimized XGBoost Inference**: Tuned on 5,410 CMS healthcare providers, with automated calculation of derived ratios, interaction intensities, and logarithmic transforms.
-- **Calibrated Decision Boundary**: Precision-recall optimized review threshold ($22.8\%$) with three operational risk bands (*Low*, *Medium*, *High*).
-- **Comprehensive API**: RESTful FastAPI backend providing health monitoring, provider lookup, portfolio-wide risk distributions, and instant batch/single-provider inference.
+## What it does
 
----
+- Scores individual provider profiles for potential fraud risk.
+- Classifies risk as Low, Medium, or High using a calibrated review threshold.
+- Computes billing, reimbursement, utilization, and clinical-intensity features automatically.
+- Supports searchable browsing across **5,410** provider records.
+- Provides portfolio-level risk counts and average risk probability.
+- Gives investigators an explainability view with local, SHAP-style risk-driver context in the dashboard.
+- Validates input data and safely imputes the three clinical fields that may be absent.
 
-## System Architecture
+## Architecture
 
+```text
+React + Vite dashboard (Vercel)
+          |
+          | HTTPS requests
+          v
+FastAPI risk API (Render / local Uvicorn)
+          |
+          +-- XGBoost classifier + scikit-learn imputer
+          +-- provider_features.csv (5,410 aggregated provider records)
 ```
-Healthcare Fraud Detection/
-├── app/
-│   └── main.py              # FastAPI server, inference pipeline, and endpoints
-├── data/
-│   ├── provider_features.csv # Aggregated CMS provider measures (5,410 providers)
-│   ├── processed/           # Processed modeling matrices
-│   └── raw/                 # Raw beneficiary, inpatient, & outpatient claims
-├── frontend/                # Single-page React dashboard redesigned by Antigravity
-│   ├── src/
-│   │   ├── App.jsx          # Complete single-page application & TreeSHAP engine
-│   │   ├── index.css        # Enterprise styling, diverging charts, and responsive grid
-│   │   └── main.jsx         # React application entry point
-│   ├── package.json
-│   └── vite.config.js
+
+## Tech stack
+
+| Layer | Technology |
+| --- | --- |
+| Frontend | React 19, Vite, Lucide React, CSS |
+| Backend | Python, FastAPI, Uvicorn, Pydantic |
+| ML | XGBoost, scikit-learn, pandas, NumPy |
+| Analysis | Jupyter, matplotlib, seaborn, SHAP |
+| Deployment | Vercel frontend; remote FastAPI fallback hosted on Render |
+
+## Repository layout
+
+```text
+.
+├── app/main.py                         # FastAPI app, validation, feature engineering, inference
+├── data/provider_features.csv          # Aggregated provider-level data (5,410 records)
+├── frontend/
+│   ├── src/App.jsx                     # Dashboard UI and API integration
+│   ├── src/index.css                   # Global styling
+│   └── package.json                    # Frontend scripts and dependencies
 ├── models/
-│   ├── xgb_tuned.pkl        # Serialized tuned XGBoost model artifact
-│   ├── imputer.pkl          # Scikit-learn SimpleImputer for clinical stay lengths
-│   └── model_metadata.json  # Feature definitions, missing indicators, & thresholds
-├── notebooks/
-│   └── 01_data_understanding.ipynb # EDA, feature engineering, and model training
-└── requirements.txt         # Python dependencies
+│   ├── xgb_tuned.pkl                   # Trained XGBoost classifier
+│   ├── imputer.pkl                     # Missing-value imputer
+│   └── model_metadata.json             # Feature order, threshold, and risk-band metadata
+├── notebooks/01_data_understanding.ipynb # EDA, feature engineering, and training work
+├── requirements.txt
+└── README.md
 ```
 
----
+## Run locally
 
-## Quick Start
+### Prerequisites
 
-### 1. Backend Setup
+- Python 3.11 or newer
+- Node.js 20 or newer with npm
 
-It is recommended to use a virtual environment with Python 3.11+:
+### 1. Start the API
 
 ```bash
-# Create and activate virtual environment
 python -m venv .venv
-source .venv/bin/activate       # On Windows: .venv\Scripts\activate
-
-# Install dependencies
+source .venv/bin/activate            # Windows: .venv\\Scripts\\activate
 pip install -r requirements.txt
-```
-
-> **Model Artifacts:** The repository already contains pre-trained artifacts in `models/`. If you want to retrain the model, run `notebooks/01_data_understanding.ipynb` from top to bottom.
-
-### 2. Start the Backend API
-
-Launch the FastAPI application using `uvicorn`:
-
-```bash
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-- **Interactive Swagger Docs:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- **API Health Check:** [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
-- **Portfolio Summary:** [http://127.0.0.1:8000/dashboard/summary](http://127.0.0.1:8000/dashboard/summary)
+The API is then available at:
 
----
+- Swagger UI: <http://127.0.0.1:8000/docs>
+- Health check: <http://127.0.0.1:8000/health>
+- Portfolio summary: <http://127.0.0.1:8000/dashboard/summary>
 
-### 3. Start the Frontend (Redesigned by Antigravity)
+### 2. Start the dashboard
 
-In a separate terminal window:
+Open a second terminal:
 
 ```bash
 cd frontend
@@ -85,83 +92,94 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Open the local URL printed by Vite (normally <http://localhost:5173>). On localhost, the dashboard uses `http://127.0.0.1:8000` by default. In deployed environments it uses the configured API URL and falls back to the hosted API.
 
-- **Local Development:** The dashboard connects to `http://127.0.0.1:8000` automatically.
-- **Custom / Cloud API:** Set `VITE_API_URL` in `frontend/.env` when deploying against a remote server.
-- **Failover:** If the local API server is offline, the client automatically routes requests through the cloud fallback API.
+### Configure a different API URL
 
----
+Create `frontend/.env`:
 
-## Dashboard Capabilities
+```env
+VITE_API_URL=https://your-api.example.com
+```
 
-The single-page dashboard ([`frontend/src/App.jsx`](file:///Users/krishkataria/Desktop/Work/Healthcare Fraud Detection/frontend/src/App.jsx)) provides an integrated audit workspace:
+Restart Vite after changing environment variables.
 
-1. **Portfolio Risk Analytics**:
-   - Executive KPI cards displaying active providers, high/medium/low risk volumes, and cohort mean fraud probability.
-   - Interactive risk distribution bar reflecting current model risk bands.
+## API reference
 
-2. **Quick Benchmark Test Scenarios**:
-   - 1-click test scenarios for flagged high-risk providers (`PRV51003`, `PRV51005`, `PRV51021`) and standard baseline providers (`PRV51001`, `PRV51004`).
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `GET` | `/` | API status and documentation location |
+| `GET` | `/health` | Model status, feature count, threshold, and risk bands |
+| `GET` | `/features` | Required, derived, and nullable input fields |
+| `POST` | `/predict` | Score a custom provider profile |
+| `GET` | `/providers` | Search and paginate provider IDs |
+| `GET` | `/providers/{provider_id}` | Retrieve a provider profile |
+| `GET` | `/providers/{provider_id}/predict` | Score an existing provider |
+| `GET` | `/dashboard/summary` | Return portfolio-level risk statistics |
 
-3. **Provider Directory & Search**:
-   - Search through all 5,410 monitored CMS providers with paginated browsing and quick profile inspection.
+### Example prediction
 
-4. **Assessment Workbench**:
-   - Categorized inputs (*Claims & Reimbursement*, *Provider Profile*, *Clinical Activity*).
-   - Dynamic real-time calculation of derived financial ratios (Total Claims, Total Reimbursement, Avg Reimbursement/Claim, Claims/Patient).
-   - Form reset and high-risk example loading.
+```bash
+curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" \
+  -d '{
+    "features": {
+      "InpatientClaims": 12,
+      "OutpatientClaims": 96,
+      "InpatientReimbursement": 210000,
+      "OutpatientReimbursement": 90000,
+      "UniquePatients": 65,
+      "UniquePhysicianCount": 7,
+      "PhysicianConcentration": 0.28,
+      "AvgPatientAge": 71.2,
+      "MedianPatientAge": 72,
+      "FemalePatientRatio": 0.57,
+      "AvgChronicConditions": 3.4,
+      "AvgLengthOfStay": 5.2,
+      "MedianLengthOfStay": 4,
+      "UniqueDiagnosisCount": 24,
+      "UniqueProcedureCount": 9,
+      "TotalDiagnosisEntries": 286,
+      "TotalProcedureEntries": 104
+    }
+  }'
+```
 
-5. **Risk Classification & Decision Meter**:
-   - Calibrated visual meter with decision threshold pin ($22.8\%$).
-   - Clear operational guidance (*"Review recommended"* vs. *"No immediate escalation"*).
+The response includes `fraud_probability`, `classification_threshold`, `predicted_potential_fraud`, `risk_level`, and a reminder that the result is not a fraud finding.
 
-6. **TreeSHAP Explainable AI (XAI)**:
-   - **Step-by-step Waterfall Margin Walk**: Shows Base Prior Margin ($E[f(x)]$ = `+0.40`) $\rightarrow$ Risk Escalators $\rightarrow$ Protective Offsets $\rightarrow$ Net Log-Odds Margin $\rightarrow$ Final Probability.
-   - **Top Drivers Highlight**: Direct comparison between features elevating risk and features providing mitigation.
-   - **Diverging Waterfall Bar Chart**: Visual horizontal bars centered at `0.0` (green for protective factor, red for risk driver) with search and category filters.
-   - **Clinical Domain Context**: Plain-language explanations of why each feature matters during CMS fraud audits.
+## Model inputs and feature engineering
 
----
+The API accepts 17 direct inputs grouped as follows:
 
-## API Endpoints
+- **Claims and reimbursement:** inpatient/outpatient claims and reimbursements.
+- **Provider profile:** patient volume, physician count and concentration, patient age, sex ratio, and chronic-condition rate.
+- **Clinical activity:** stay length, diagnosis/procedure diversity, and diagnosis/procedure entry counts.
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/` | API status and root documentation link |
-| `GET` | `/health` | Health check, model status, feature count, threshold, and risk bands |
-| `GET` | `/features` | Returns required input features, derived features, and missing-value fields |
-| `POST` | `/predict` | Evaluates custom provider features and returns fraud probability, risk level, and decision |
-| `GET` | `/providers` | Paginated search of available providers (`?search=PRV&skip=0&limit=20`) |
-| `GET` | `/providers/{id}` | Fetches raw feature record for a specific provider |
-| `GET` | `/providers/{id}/predict` | Runs instant prediction on an existing database provider |
-| `GET` | `/dashboard/summary` | Portfolio-level risk band counts and cohort average fraud probability |
+Before inference, the API derives 12 additional measures: total claims and reimbursement, reimbursement per claim/patient, claims per patient/physician, inpatient share, diagnosis/procedure intensity, and logarithmic volume transformations. `AvgLengthOfStay`, `MedianLengthOfStay`, and `UniqueProcedureCount` may be `null`; the saved imputer fills these values and the model receives matching missingness indicators.
 
----
+Input validation rejects unknown fields, non-numeric or infinite values, disallowed missing values, negative count fields, and cases that would produce invalid ratios.
 
-## Model Features & Ratios
+## Risk bands
 
-The model accepts **17 direct provider inputs** and automatically computes **12 derived features** and **3 missing-value indicators** before prediction:
+| Risk level | Probability range | Suggested handling |
+| --- | --- | --- |
+| Low | `< 22.80%` | Continue routine monitoring. |
+| Medium | `22.80%–59.99%` | Perform secondary review. |
+| High | `≥ 60.00%` | Prioritize for detailed audit review. |
 
-- **Financial Measures:** `InpatientReimbursement`, `OutpatientReimbursement`, `TotalReimbursement`, `AvgReimbursementPerClaim`, `ReimbursementPerPatient`
-- **Volume & Utilization:** `InpatientClaims`, `OutpatientClaims`, `TotalClaims`, `InpatientRatio`, `ClaimsPerPatient`, `ClaimsPerPhysician`
-- **Clinical Intensity:** `AvgLengthOfStay`, `MedianLengthOfStay`, `UniqueDiagnosisCount`, `UniqueProcedureCount`, `TotalDiagnosisEntries`, `TotalProcedureEntries`, `DiagnosisIntensity`, `ProcedureIntensity`
-- **Provider & Cohort Demographics:** `UniquePatients`, `UniquePhysicianCount`, `PhysicianConcentration`, `AvgPatientAge`, `MedianPatientAge`, `FemalePatientRatio`, `AvgChronicConditions`
-- **Missing Indicators:** `AvgLengthOfStay_Missing`, `MedianLengthOfStay_Missing`, `UniqueProcedureCount_Missing` (imputed with training medians when left blank)
+The review threshold is stored in [`models/model_metadata.json`](models/model_metadata.json) and is currently `0.2279669642`.
 
----
+## Dashboard workflow
 
-## Risk Bands
+1. Review portfolio statistics and risk distribution.
+2. Search the provider directory or select a benchmark scenario.
+3. Inspect and adjust a provider profile in the assessment form.
+4. Run a risk assessment.
+5. Use the risk meter and feature-driver view to inform an investigator's next steps.
 
-| Tier | Probability Range | Action Recommendation |
-| :--- | :--- | :--- |
-| **Low Risk** | $< 22.8\%$ | Standard ongoing monitoring; below review threshold |
-| **Medium Risk** | $22.8\% \le p < 60.0\%$ | Secondary review flag; moderate anomaly |
-| **High Risk** | $\ge 60.0\%$ | Mandatory priority audit; significant billing/utilization divergence |
+## Retraining and analysis
 
----
+The notebook at [`notebooks/01_data_understanding.ipynb`](notebooks/01_data_understanding.ipynb) contains the exploratory analysis, feature-engineering, and training workflow. Run it in order when retraining so the model, imputer, and metadata remain compatible with the API's expected feature order.
 
-## Credits
+## Responsible use
 
-- **Machine Learning & Inference Pipeline**: XGBoost & FastAPI
-- **Frontend Design & TreeSHAP Integration**: Redesigned by **Antigravity**
+This project is designed for prioritization—not automated adjudication. Model output can reflect data quality, historical labeling, coverage gaps, and population bias. Use it with privacy protections, audit logs, representative validation, fairness testing, and qualified human review.
